@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'firebase_firestore.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -41,7 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late FirebaseAuth auth;
   final String _email = "suludogan95@gmail.com";
-  final String _password = "yenisifre2";
+  final String _password = "123456";
 
   @override
   void initState() {
@@ -63,57 +64,80 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  createUserEmailAndPassword();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.red),
-                child: const Text('Email Şifre Kayıt')),
-            ElevatedButton(
-                onPressed: () {
-                  loginUserEmailAndPassword();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.pink),
-                child: const Text('Giriş')),
-            ElevatedButton(
-                onPressed: () {
-                  signOutUser();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.green),
-                child: const Text('Çıkış yap')),
-            ElevatedButton(
-                onPressed: () {
-                  deleteUser();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.purple),
-                child: const Text('Kullanıcıyı sil')),
-            ElevatedButton(
-                onPressed: () {
-                  updatePassword();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.brown),
-                child: const Text('Parola yenile')),
-            ElevatedButton(
-                onPressed: () {
-                  updateEmail();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
-                child: const Text('Email değiştir')),
-            ElevatedButton(
-                onPressed: () {
-                  signInWithGoogle();
-                },
-                style: ElevatedButton.styleFrom(primary: Colors.blue),
-                child: const Text('Google Giriş')),
-          ],
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
+        body: Column(
+          children: [
+            signin_metots(),
+            const SizedBox(height: 50,),
+            Container(
+              color: Colors.red,
+              height: 2,
+            ),
+            const SizedBox(height: 50,),
+            FirebaseFirestoreUsage(),
+          ],
+        ));
+  }
+
+  signin_metots() {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    createUserEmailAndPassword();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  child: const Text('Email Şifre Kayıt')),
+              ElevatedButton(
+                  onPressed: () {
+                    loginUserEmailAndPassword();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.pink),
+                  child: const Text('Giriş')),
+              ElevatedButton(
+                  onPressed: () {
+                    signOutUser();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.green),
+                  child: const Text('Çıkış yap')),
+            ],
+          ),
+          Column(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    deleteUser();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.purple),
+                  child: const Text('Kullanıcıyı sil')),
+              ElevatedButton(
+                  onPressed: () {
+                    updatePassword();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.brown),
+                  child: const Text('Parola yenile')),
+              ElevatedButton(
+                  onPressed: () {
+                    updateEmail();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
+                  child: const Text('Email değiştir')),
+              ElevatedButton(
+                  onPressed: () {
+                    signInWithGoogle();
+                  },
+                  style: ElevatedButton.styleFrom(primary: Colors.blue),
+                  child: const Text('Google Giriş')),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -126,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (!_myUser!.emailVerified) {
         _myUser.sendEmailVerification();
-      }else{
+      } else {
         debugPrint("email onaylanmış");
       }
 
@@ -150,29 +174,30 @@ class _MyHomePageState extends State<MyHomePage> {
     await auth.signOut();
   }
 
-  void deleteUser() async{
-    if(auth.currentUser!=null) {
+  void deleteUser() async {
+    if (auth.currentUser != null) {
       await auth.currentUser!.delete();
-    }else{
+    } else {
       debugPrint("Önce oturum açın");
     }
   }
 
-  void updatePassword()async {
-    try{
-      await auth.currentUser!.updatePassword('yenisifre2');
+  void updatePassword() async {
+    try {
+      await auth.currentUser!.updatePassword('123456');
       signOutUser();
-    }on FirebaseAuthException catch(e){
+    } on FirebaseAuthException catch (e) {
       //Kullanıcı uygulamaya giriş yaptıktan sonra eğer çok fazla uygulama içerisinde vakit geçirmiş olursa
       //Kullanıcıdan tekrar giriş yapması beklenir. Bu firebase'in güvenlik sistemidir.
       //Aşağıdaki kod "requires-recent-login" firebase'in fırlatmış olduğu bir exception'dır.
       //Bu exception ile tekrar giriş yapması gerektiğini kullanıcıya hatırlatıyoruz.
       //Kullanıcı tekrar giriş yaptıktan sonra parola yenileme işlemi gerçekleştiriliyor.
-      if(e.code == 'requires-recent-login'){
-        var credential = EmailAuthProvider.credential(email: _email, password: _password);
+      if (e.code == 'requires-recent-login') {
+        var credential =
+            EmailAuthProvider.credential(email: _email, password: _password);
         await auth.currentUser!.reauthenticateWithCredential(credential);
 
-        await auth.currentUser!.updatePassword('yenisifre2');
+        await auth.currentUser!.updatePassword('123456');
         signOutUser();
         debugPrint("Şifre güncellendi");
       }
@@ -180,18 +205,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void updateEmail() async{
-    try{
+  void updateEmail() async {
+    try {
       await auth.currentUser!.updatePassword('suludogan95@gmail.com');
       signOutUser();
-    }on FirebaseAuthException catch(e){
+    } on FirebaseAuthException catch (e) {
       //Kullanıcı uygulamaya giriş yaptıktan sonra eğer çok fazla uygulama içerisinde vakit geçirmiş olursa
       //Kullanıcıdan tekrar giriş yapması beklenir. Bu firebase'in güvenlik sistemidir.
       //Aşağıdaki kod "requires-recent-login" firebase'in fırlatmış olduğu bir exception'dır.
       //Bu exception ile tekrar giriş yapması gerektiğini kullanıcıya hatırlatıyoruz.
       //Kullanıcı tekrar giriş yaptıktan sonra email yenileme işlemi gerçekleştiriliyor.
-      if(e.code == 'requires-recent-login'){
-        var credential = EmailAuthProvider.credential(email: _email, password: _password);
+      if (e.code == 'requires-recent-login') {
+        var credential =
+            EmailAuthProvider.credential(email: _email, password: _password);
         await auth.currentUser!.reauthenticateWithCredential(credential);
 
         await auth.currentUser!.updatePassword('suludogan95@gmail.com');
@@ -207,7 +233,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
