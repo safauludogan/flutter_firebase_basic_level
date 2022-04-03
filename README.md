@@ -1,6 +1,12 @@
 # flutter_firebase_app1
 
-A new Flutter project.
+Giriş seviyesi <br>
+.email password girişi <br>
+.google girişi <br>
+.çıkış işlemleri <br>
+.veri okuma, yazma <br>
+.batch <br>
+.transaction <br>
 
 ## Getting Started
 
