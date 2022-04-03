@@ -1,12 +1,12 @@
 # flutter_firebase_app1
 
-Giriş seviyesi
+Giriş seviyesi <br>
 .email password girişi <br>
 .google girişi <br>
-.çıkış işlemleri
-.veri okuma, yazma
-.batch
-.transaction
+.çıkış işlemleri <br>
+.veri okuma, yazma <br>
+.batch <br>
+.transaction <br>
 
 ## Getting Started
 
