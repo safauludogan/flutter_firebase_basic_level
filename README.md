@@ -1,8 +1,8 @@
 # flutter_firebase_app1
 
 Giriş seviyesi
-.email password girişi
-.google girişi
+.email password girişi \br
+.google girişi \br
 .çıkış işlemleri
 .veri okuma, yazma
 .batch
